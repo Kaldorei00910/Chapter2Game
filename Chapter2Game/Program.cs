@@ -11,6 +11,7 @@ namespace Chapter2Game
             Player player = new Player();
             List<Item> invenList = new List<Item>();
             List<Item> allitemList = new List<Item>();
+            List<Dungeon> DungeonList = new List<Dungeon>();
 
             int atkPlus = 0;
             int defPlus = 0;
@@ -22,6 +23,14 @@ namespace Chapter2Game
             Item bronzeAxe = new Item("청동 도끼    ", "공격력", 5, "", "어디선가 사용됐던거 같은 도끼입니다.              ", 1500);
             Item spartaPlate = new Item("스파르타의 갑옷", "방어력", 15, "", "스파르타의 전사들이 사용했다는 전설의 갑옷입니다.", 3500);
             Item stone = new Item("돌맹이       ", "공격력", 1, "", "그냥 돌입니다.                           ", 1);
+
+            Dungeon level1 = new Dungeon(1, 1000, 5);
+            Dungeon level2 = new Dungeon(2, 1700, 11);
+            Dungeon level3 = new Dungeon(3, 2500, 17);
+
+            DungeonList.Add(level1);
+            DungeonList.Add(level2);
+            DungeonList.Add(level3);
 
             allitemList.Add(stone);
             allitemList.Add(mu_shuePlate);
@@ -71,6 +80,9 @@ namespace Chapter2Game
                 else if (answer == "4")
                 {
                     string answerDungeon = "";
+                    int justhp = 0;
+                    int justgold = 0;
+                    Random random = new Random();
                     do
                     {
                         Console.Clear();
@@ -88,13 +100,48 @@ namespace Chapter2Game
                         {
                             if(stage >= 1 && stage < 4)//던전 입장, 0입력시 마을로감
                             {
+                                
+                                if (DungeonList[stage-1].needDef > player.defencelevel + defPlus)//던전의 방어도가 더 높을경우(40퍼확률 실패)
+                                {
+                                    if (random.Next(1, 10) <=4)//확률적 실패한 경우
+                                    {
+                                        Console.Clear();
+                                        Console.WriteLine("던전에 실패했습니다.\n");
+                                        Console.WriteLine("[탐험 결과]\n체력이 절반 감소했습니다.");
+                                        Console.WriteLine("체력 {0} -> {1}",player.hp,player.hp/2);
+                                        player.hp = (int)((float)player.hp / 2.0f);
 
+                                        Console.WriteLine("\n엔터를 눌러 계속...");
+                                        Console.ReadLine();
+                                    }
+                                    else
+                                    {
+                                        Console.Clear();
+                                        Console.WriteLine("던전에 실패했습니다.\n");
+                                        Console.WriteLine("[탐험 결과]\n목숨만 챙겨서 도망쳤습니다..");
+                                        Console.WriteLine("\n엔터를 눌러 계속...");
+                                        Console.ReadLine();
+                                    }
+                                }
+                                else
+                                {
+                                    Console.Clear();
+                                    Console.WriteLine("던전 클리어.");
+                                    Console.WriteLine("축하합니다!!");
+                                    Console.WriteLine("{0}단계 던전을 클리어 하였습니다\n", DungeonList[stage - 1].dlevel);
+                                    Console.WriteLine("[탐험 결과]");
 
+                                    justhp = player.hp;
+                                    player.hp -= random.Next(20 + (DungeonList[stage - 1].needDef - player.defencelevel - defPlus), 35 + (DungeonList[stage - 1].needDef - player.defencelevel - defPlus));
+                                    Console.WriteLine("체력 {0} -> {1}", justhp, player.hp);
 
+                                    justgold = player.gold;
+                                    player.gold += (int)((float)DungeonList[stage - 1].reward * (1.0f + (float)random.Next(player.attacklevel + atkPlus, (player.attacklevel + atkPlus) * 2)));
+                                    Console.WriteLine("Gold {0} -> {1}", justgold, player.gold);
 
-
-
-
+                                    Console.WriteLine("\n엔터를 눌러 계속...");
+                                    Console.ReadLine();
+                                }
 
 
 
@@ -415,7 +462,7 @@ namespace Chapter2Game
             public int gold = 1500;
         }
 
-        class Item
+        class Item//아이템에 대한 정보
         {
             public string name;
             public string type;
@@ -434,6 +481,22 @@ namespace Chapter2Game
                 doesEquip = doesEquip_;
                 story = story_;
                 cost = cost_;
+            }
+        }
+
+        class Dungeon//던전에 대한 정보
+        {
+            public int dlevel;
+            public int reward;
+            public int needDef;
+
+
+            public Dungeon(int dlevel_, int reward_, int needDef_)
+            {
+                dlevel = dlevel_;
+                reward = reward_;
+                needDef = needDef_;
+
             }
         }
 
