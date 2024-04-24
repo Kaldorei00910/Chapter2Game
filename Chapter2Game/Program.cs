@@ -8,12 +8,15 @@ namespace Chapter2Game
         {
             //초기설정
             Player player = new Player();
-            //MakeItems();
-
             List<Item> invenList = new List<Item>();
 
-            Item mu_shuePlate = new Item("이름", "타입", 999, "착용함", true, "여기에이야기");
+            Item mu_shuePlate = new Item("무쇠갑옷    ", "방어력", 5, "[E]", "무쇠로 만들어져 튼튼한 갑옷입니다");
+            Item spartaSpear = new Item("스파르타의 창", "공격력", 2, "", "스파르타의 전사들이 사용했다는 전설의 창입니다.");
+            Item oldSword = new Item("낡은 검       ", "공격력", 2, "", "쉽게 볼 수 있는 낡은 검 입니다.");
+
             invenList.Add(mu_shuePlate);
+            invenList.Add(oldSword);
+            invenList.Add(spartaSpear);
 
             while (true)
             {
@@ -41,29 +44,6 @@ namespace Chapter2Game
 
         }//메인 종료(게임종료)
 
-        //public static void MakeItems()
-        //{
-        //    Item mu_shuePlate;
-        //    mu_shuePlate.name = "무쇠갑옷";
-        //    mu_shuePlate.type = "방어력";
-        //    mu_shuePlate.value = 5;
-        //    mu_shuePlate.doesEquip = "E";
-        //    mu_shuePlate.story = "무쇠로 만들어져 튼튼한 갑옷입니다";
-
-        //    Item spartaSpear;
-        //    spartaSpear.name = "스파르타의 창";
-        //    spartaSpear.type = "공격력";
-        //    spartaSpear.value = 7;
-        //    spartaSpear.doesEquip = "";
-        //    spartaSpear.story = "스파르타의 전사들이 사용했다는 전설의 창입니다.";
-
-        //    Item oldSword;
-        //    mu_shuePlate.name = "낡은 검";
-        //    mu_shuePlate.type = "공격력";
-        //    mu_shuePlate.value = 2;
-        //    mu_shuePlate.doesEquip = "";
-        //    mu_shuePlate.story = "쉽게 볼 수 있는 낡은 검 입니다.";
-        //}
 
         private static void ShowStatus(Player player)//상태보기 수행
         {
@@ -87,28 +67,90 @@ namespace Chapter2Game
 
         private static void ShowInventory(List<Item> invenList)//인벤토리 수행
         {
+            int count = 0;
+
             Console.Clear();
             Console.WriteLine("인벤토리\n보유 중인 아이템을 관리할 수 있습니다.\n");
             Console.WriteLine("[아이템 목록]\n");
 
-            foreach(Item exitem in invenList)
-            {
-                Console.WriteLine(" - {0}{1}\t| 방어력 +{2} | {3}", exitem.doesEquip,exitem.name,exitem.value,exitem.story);
+            count = ShowItemList(invenList, count);
 
-            }
-
-            Console.WriteLine("1. 장착 관리\n");
+            Console.WriteLine("\n1. 장착 관리");
             Console.WriteLine("0. 나가기\n");
             Console.WriteLine("원하시는 행동을 입력해주세요");
 
-            while (char.Parse(Console.ReadLine()) != '0')
+            string answer = Console.ReadLine();
+
+            while (answer != "0" && answer != "1")
             {
                 Console.WriteLine("올바른 값을 입력하세요");
+                answer = Console.ReadLine();
             }
-            Console.Clear();
 
+            if (answer == "1")
+            {
+                ChangeEquipment(count, invenList);
+            }
+
+            Console.Clear();
         }
 
+        private static int ShowItemList(List<Item> invenList, int count)
+        {
+            count = 0;
+            Console.SetCursorPosition(0, 5);
+            foreach (Item exitem in invenList)
+            {
+                Console.WriteLine(" - {0}{1}\t| {2} +{3} | {4}", exitem.doesEquip, exitem.name, exitem.type, exitem.value, exitem.story);
+                count++;
+            }
+
+            return count;
+        }
+
+        private static void ChangeEquipment(int count, List<Item> invenList)
+        {
+            string answer = "";
+            do
+            {
+                answer = "";
+                for (int i = count; i > 0; i--)
+                {
+                    Console.SetCursorPosition(0, 4 + i);
+                    Console.WriteLine("{0}.", i);
+                }
+                Console.SetCursorPosition(0, 9 + count);
+                Console.WriteLine("착용(해제)하려는 장비의 번호를 입력해주세요(취소는 0번)");
+                answer = Console.ReadLine();
+                if (int.TryParse(answer, out int number))
+                {
+                    if (number < 0 || number > count)
+                    {
+                        Console.WriteLine("올바른 값을 입력하세요");
+                    }
+                    else
+                    {
+                        if (invenList[number-1].doesEquip == "[E]")
+                        {
+                            invenList[number - 1].doesEquip = "";
+                        }
+                        else
+                        {
+                            invenList[number - 1].doesEquip = "[E]";
+                        }
+                        
+                    }
+
+                }
+                else
+                {
+                    Console.WriteLine("숫자를 입력하세요");
+                }
+                ShowItemList(invenList, count);
+            }
+            while (answer != "0");
+
+        }
 
         private static char ShowMainScreen()
         {
@@ -134,20 +176,6 @@ namespace Chapter2Game
             public int gold = 1500;
         }
 
-        //class Inventory//item타입의 list로 변경
-        //{
-
-        //}
-
-        //struct Item
-        //{
-        //    public string name;
-        //    public string type;
-        //    public int value;
-        //    public string doesEquip;
-        //    public bool doesHave;
-        //    public string story;
-        //}
         class Item
         {
             public string name;
@@ -158,13 +186,12 @@ namespace Chapter2Game
             public string story;
 
 
-            public Item(string name_, string type_, int value_, string doesEquip_, bool doesHave_, string story_)
+            public Item(string name_, string type_, int value_, string doesEquip_, string story_)
             {
                 name = name_;
                 type = type_;
                 value = value_;
                 doesEquip = doesEquip_;
-                doesHave = doesHave_;
                 story = story_;
 
             }
