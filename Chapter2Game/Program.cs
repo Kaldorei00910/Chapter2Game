@@ -20,7 +20,7 @@ namespace Chapter2Game
             Item workPlate = new Item("수련자 갑옷  ", "방어력", 5, "", "수련에 도움을 주는 갑옷입니다.                   ", 1000);
             Item bronzeAxe = new Item("청동 도끼    ", "공격력", 5, "", "어디선가 사용됐던거 같은 도끼입니다.              ", 1500);
             Item spartaPlate = new Item("스파르타의 갑옷", "방어력", 15, "", "스파르타의 전사들이 사용했다는 전설의 갑옷입니다.", 3500);
-            Item stone = new Item("돌맹이       ", "공격력", 1, "", "그냥 돌입니다.                                    ", 1);
+            Item stone = new Item("돌맹이       ", "공격력", 1, "", "그냥 돌입니다.                           ", 1);
 
             allitemList.Add(stone);
             allitemList.Add(mu_shuePlate);
@@ -82,7 +82,7 @@ namespace Chapter2Game
 
         private static void ShowStore(Player player, List<Item> invenList, List<Item> allitemList)
         {
-            string storeAnswer = "";
+            string storeAnswer = "firstopen";
 
             while (storeAnswer != "0")
             {
@@ -105,9 +105,88 @@ namespace Chapter2Game
                         Console.WriteLine(" - {0}. {1}\t| {2} +{3} | {4}\t| {5} G", storeCount, exitem.name, exitem.type, exitem.value, exitem.story, exitem.cost);
 
                     }
+                }        
+                if (storeAnswer == "1")//구매 시작
+                {
+                    BuyAtStore(player, invenList, allitemList, storeCount);
                 }
+                else if(storeAnswer == "2")//판매 시작
+                {
+                    SellAtStore(player, invenList, allitemList, storeCount);
+                }
+                Console.SetCursorPosition(0, 8 + storeCount);
+                Console.Write("                                           \r");
+                Console.WriteLine("1.아이템 구매");
+                Console.WriteLine("2.아이템 판매");
+                Console.Write("                                           \r");
+                Console.WriteLine("0.나가기\n   ");
+                Console.WriteLine("원하시는 행동을 입력해주세요");
+                Console.Write("                                           \r");
 
-                if (int.TryParse(storeAnswer, out int number))
+
+                storeAnswer = Console.ReadLine();
+
+            }
+        }
+
+        private static void SellAtStore(Player player, List<Item> invenList, List<Item> allitemList, int storeCount)
+        {
+            string payAnswer = "firstopen";
+            while (payAnswer != "0")
+            {
+                Console.SetCursorPosition(0, 7 + storeCount);
+                Console.WriteLine("\n판매할 아이템을 선택해주세요.");
+                Console.WriteLine("\n0. 상점으로 돌아가기\n\n");
+
+                if (int.TryParse(payAnswer, out int number))
+                {
+                    if (number <= 0 || number > storeCount)
+                    {
+                        Console.WriteLine("올바른 값을 입력하세요");
+                    }
+                    else
+                    {
+                        if (invenList.Contains(allitemList[number - 1])!) //아이템을 가지고 있다면
+                        {
+                            invenList.Remove(allitemList[number - 1]);
+                            player.gold += (int)((float)(allitemList[number - 1].cost) * 0.85f);
+                            Console.SetCursorPosition(0, 4);
+                            Console.Write("\r");
+                            Console.WriteLine("{0} G", player.gold);
+                            Console.SetCursorPosition(0, 7 + number - 1);
+                            Console.WriteLine(" - {0}. {1}\t| {2} +{3} | {4}\t| {5} G       ", number, allitemList[number - 1].name, allitemList[number - 1].type, allitemList[number - 1].value, allitemList[number - 1].story, allitemList[number - 1].cost);
+
+                        }
+                        else
+                        {
+                            Console.SetCursorPosition(0, 7 + storeCount);
+                            Console.WriteLine("\n소유하고 있지 않은 아이템입니다.\n판매할 아이템을 선택해주세요.");
+                        }
+                    }
+                }
+                else if (payAnswer == "firstopen")
+                {
+
+                }
+                else
+                {
+                    Console.WriteLine("숫자를 입력하세요");
+                }
+                Console.SetCursorPosition(0, 11 + storeCount);
+                payAnswer = Console.ReadLine();
+            }
+        }
+
+        private static void BuyAtStore(Player player, List<Item> invenList, List<Item> allitemList, int storeCount)
+        {
+            string buyAnswer = "firstopen";
+            while (buyAnswer != "0")
+            {
+                Console.SetCursorPosition(0, 7 + storeCount);
+                Console.WriteLine("\n구매할 아이템을 선택해주세요.");
+                Console.WriteLine("\n0. 상점으로 돌아가기\n\n");
+
+                if (int.TryParse(buyAnswer, out int number))
                 {
                     if (number <= 0 || number > storeCount)
                     {
@@ -128,26 +207,23 @@ namespace Chapter2Game
                             invenList.Add(allitemList[number - 1]);
                             player.gold = player.gold - allitemList[number - 1].cost;
                             Console.SetCursorPosition(0, 4);
-                            Console.WriteLine("    {0} G", player.gold);
+                            Console.Write("\r");
+                            Console.WriteLine("{0} G", player.gold);
                             Console.SetCursorPosition(0, 7 + number - 1);
                             Console.WriteLine(" - {0}. {1}\t| {2} +{3} | {4}\t| 구매완료", number, allitemList[number - 1].name, allitemList[number - 1].type, allitemList[number - 1].value, allitemList[number - 1].story);
-                            
-
                         }
                     }
+                }
+                else if (buyAnswer == "firstopen")
+                {
+
                 }
                 else
                 {
                     Console.WriteLine("숫자를 입력하세요");
                 }
-
-                Console.SetCursorPosition(0, 7 + storeCount);
-                Console.WriteLine("\n 0.나가기\n");
-                Console.WriteLine("원하시는 행동을 입력해주세요");
-
-
-                storeAnswer = Console.ReadLine();
-
+                Console.SetCursorPosition(0, 11 + storeCount);
+                buyAnswer = Console.ReadLine();
             }
         }
 
