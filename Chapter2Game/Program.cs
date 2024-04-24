@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography.X509Certificates;
+﻿using System.Runtime.ExceptionServices;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Chapter2Game
 {
@@ -38,7 +39,7 @@ namespace Chapter2Game
             {
                 string answer = ShowMainScreen();//메인스크린 호출 및 값 받아오기
 
-                atkPlus = 0;//추가되는 공격력과 방어력 매번 메인스크린때마다 변경해주기
+                atkPlus = 0;//장비로 인해 추가되는 공격력과 방어력 매번 메인스크린때마다 변경해주기
                 defPlus = 0;
                 foreach (Item item in invenList)
                 {
@@ -65,7 +66,52 @@ namespace Chapter2Game
                 }
                 else if (answer == "3")
                 {
-                    ShowStore(player, invenList, allitemList);
+                    ShowStore(player, invenList, allitemList);//상점 진입
+                }
+                else if (answer == "4")
+                {
+                    string answerDungeon = "";
+                    do
+                    {
+                        Console.Clear();
+                        Console.WriteLine("던전입장");
+                        Console.WriteLine("난이도에 맞는 던전을 선택해 주세요!");
+                        Console.WriteLine("\n1. 수퍼 겁쟁이들의 쉽터 \t | 방어력 5 이상 권장");
+                        Console.WriteLine("2. 보통 겁쟁이들의 쉼터 \t | 방어력 11 이상 권장");
+                        Console.WriteLine("3. !!! 사나이 클럽 !!!   \t | 방어력 17 이상 권장\n");
+                        Console.WriteLine("0. 겁에 질려 도망가기");
+                        Console.WriteLine("\n원하시는 행동을 입력해주세요.");
+
+                        answerDungeon = Console.ReadLine();
+
+                        if (int.TryParse(answerDungeon, out int stage))//숫자 입력받음
+                        {
+                            if(stage >= 1 && stage < 4)//던전 입장, 0입력시 마을로감
+                            {
+
+
+
+
+
+
+
+
+
+
+                            }
+                            else
+                            {
+                                Console.WriteLine("올바른 번호를 입력하세요");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("올바른 숫자를 입력하세요");
+                        }
+
+                    }
+                    while (answerDungeon != "0");
+
                 }
                 else if (answer == "showmethemoney")//치트기능..돈증가
                 {
@@ -352,6 +398,7 @@ namespace Chapter2Game
             Console.WriteLine("\n1. 상태 보기");
             Console.WriteLine("2. 인벤토리");
             Console.WriteLine("3. 상점");
+            Console.WriteLine("4. 던전 입장!");
             Console.WriteLine("\n원하시는 행동을 입력해주세요.");
             answer = Console.ReadLine();
             return answer;
