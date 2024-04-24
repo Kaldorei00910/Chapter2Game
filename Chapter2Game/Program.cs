@@ -319,9 +319,16 @@ namespace Chapter2Game
                         {
                             invenList[number - 1].doesEquip = "";
                         }
-                        else
+                        else//아이템을 장착하고, 같은 부류의 아이템 장착 해제하기!
                         {
                             invenList[number - 1].doesEquip = "[E]";
+
+                            int searchEquipSame = invenList.FindIndex(what => what.doesEquip.Equals("[E]") && !what.Equals(invenList[number-1]) && what.type.Equals(invenList[number-1].type));
+
+                            if (searchEquipSame != -1)//같은 부류 아이템 찾은경우
+                            {
+                                invenList[searchEquipSame].doesEquip = "";//해당 아이템 해제시키기
+                            }
                         }
 
                     }
