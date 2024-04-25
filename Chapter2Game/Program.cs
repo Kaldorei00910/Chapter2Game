@@ -17,7 +17,7 @@ namespace Chapter2Game
             int defPlus = 0;
 
             Item mu_shuePlate = new Item("무쇠갑옷      ", "방어력", 5, "", "무쇠로 만들어져 튼튼한 갑옷입니다           ", 1000);
-            Item spartaSpear = new Item("스파르타의 창", "공격력", 2, "", "스파르타의 전사들이 사용했다는 전설의 창입니다.", 1200);
+            Item spartaSpear = new Item("스파르타의 창", "공격력", 12, "", "스파르타의 전사들이 사용했다는 전설의 창입니다.", 1200);
             Item oldSword = new Item("낡은 검       ", "공격력", 2, "", "쉽게 볼 수 있는 낡은 검 입니다.                  ", 600);
             Item workPlate = new Item("수련자 갑옷  ", "방어력", 5, "", "수련에 도움을 주는 갑옷입니다.                   ", 1000);
             Item bronzeAxe = new Item("청동 도끼    ", "공격력", 5, "", "어디선가 사용됐던거 같은 도끼입니다.              ", 1500);
@@ -84,38 +84,7 @@ namespace Chapter2Game
                 }
                 else if ( answer == "5")//휴식하기
                 {
-                    string answerRest = "";
-                    Console.Clear();
-                    Console.WriteLine("휴식하기");
-                    Console.WriteLine("500 G 를 내면 체력을 회복할 수 있습니다. (보유 골드 : {0} G)            ",player.gold);
-                    Console.WriteLine("\n1. 휴식하기");
-                    Console.WriteLine("0. 나가기");
-                    Console.WriteLine("\n원하시는 행동을 입력해주세요.");
-
-                    answerRest = Console.ReadLine();
-                    if(answerRest == "1")
-                    {
-                        if (player.gold > 500)
-                        {
-                            Console.Clear();
-                            Console.WriteLine("체력을 회복했습니다!");
-                            Console.WriteLine("플레이어 체력 : {0} -> {1}       ", player.hp, 100);
-                            Console.WriteLine("보유 Gold : {0} -> {1}       ", player.gold, player.gold - 500);
-                            player.hp = 100;
-                            player.gold -= 500;
-                            Console.WriteLine("\n엔터를 눌러 계속...");
-                            Console.ReadLine();
-
-                        }
-                        else
-                        {
-                            Console.Clear();
-                            Console.WriteLine("보유 Gold가 부족합니다!");
-                            Console.WriteLine("\n엔터를 눌러 계속...");
-                            Console.ReadLine();
-                        }
-                    }
-
+                    GoRest(player);
 
                 }
                 else if (answer == "showmethemoney")//치트기능..돈증가
@@ -131,11 +100,47 @@ namespace Chapter2Game
 
         }//메인 종료(게임종료)
 
+        private static void GoRest(Player player)
+        {
+            string answerRest = "";
+            Console.Clear();
+            Console.WriteLine("휴식하기");
+            Console.WriteLine("500 G 를 내면 체력을 회복할 수 있습니다. (보유 골드 : {0} G)            ", player.gold);
+            Console.WriteLine("\n1. 휴식하기");
+            Console.WriteLine("0. 나가기");
+            Console.WriteLine("\n원하시는 행동을 입력해주세요.");
+
+            answerRest = Console.ReadLine();
+            if (answerRest == "1")
+            {
+                if (player.gold > 500)
+                {
+                    Console.Clear();
+                    Console.WriteLine("체력을 회복했습니다!");
+                    Console.WriteLine("플레이어 체력 : {0} -> {1}       ", player.hp, 100);
+                    Console.WriteLine("보유 Gold : {0} -> {1}       ", player.gold, player.gold - 500);
+                    player.hp = 100;
+                    player.gold -= 500;
+                    Console.WriteLine("\n엔터를 눌러 계속...");
+                    Console.ReadLine();
+
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("보유 Gold가 부족합니다!");
+                    Console.WriteLine("\n엔터를 눌러 계속...");
+                    Console.ReadLine();
+                }
+            }
+        }
+
         private static void DungeonEnter(Player player, List<Dungeon> DungeonList, int atkPlus, int defPlus)
         {
             string answerDungeon = "";
             int justhp = 0;
             int justgold = 0;
+            int clearCount = 0;
             Random random = new Random();
             do
             {
@@ -179,6 +184,7 @@ namespace Chapter2Game
                         }
                         else
                         {
+                            clearCount++;
                             Console.Clear();
                             Console.WriteLine("던전 클리어.");
                             Console.WriteLine("축하합니다!!");
@@ -190,8 +196,22 @@ namespace Chapter2Game
                             Console.WriteLine("체력 {0} -> {1}", justhp, player.hp);
 
                             justgold = player.gold;
-                            player.gold += (int)((float)DungeonList[stage - 1].reward * (1.0f + (float)random.Next(player.attacklevel + atkPlus, (player.attacklevel + atkPlus) * 2)));
+                            player.gold += (int)((float)DungeonList[stage - 1].reward * (1.0f + random.Next((int)(player.attacklevel + (float)atkPlus), (int)((player.attacklevel + (float)atkPlus) * 2.0f))));
                             Console.WriteLine("Gold {0} -> {1}", justgold, player.gold);
+
+                            if(clearCount == player.level)
+                            {
+                                clearCount = 0;
+                                Console.WriteLine("\nLEVEL UP!");
+                                Console.WriteLine("플레이어 레벨 : {0} -> {1}     ",player.level,player.level+1);
+                                player.level += 1;
+                                Console.WriteLine("플레이어 공격력 : {0} -> {1}",player.attacklevel, player.attacklevel+0.5f);
+                                Console.WriteLine("플레이어 방어력 : {0} -> {1}", player.defencelevel, player.defencelevel + 1);
+                                player.attacklevel += 0.5f;
+                                player.defencelevel += 1;
+                            }
+
+
 
                             Console.WriteLine("\n엔터를 눌러 계속...");
                             Console.ReadLine();
@@ -499,7 +519,7 @@ namespace Chapter2Game
         {
             public int level = 1;
             public string chad = "전사";
-            public int attacklevel = 10;
+            public float attacklevel = 10;
             public int defencelevel = 5;
             public int hp = 100;
             public int gold = 1500;
