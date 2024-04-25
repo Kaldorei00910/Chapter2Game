@@ -221,11 +221,17 @@ namespace Chapter2Game
             do
             {
                 Console.Clear();
-                Console.WriteLine("던전입장");
+                Console.BackgroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine("[던전입장]");
+                Console.ResetColor();
                 Console.WriteLine("난이도에 맞는 던전을 선택해 주세요!");
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("\n1. 수퍼 겁쟁이들의 쉽터 \t | 방어력 5 이상 권장");
+                Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("2. 보통 겁쟁이들의 쉼터 \t | 방어력 11 이상 권장");
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("3. !!! 사나이 클럽 !!!   \t | 방어력 17 이상 권장\n");
+                Console.ResetColor();
                 Console.WriteLine("0. 겁에 질려 도망가기");
                 Console.WriteLine("\n원하시는 행동을 입력해주세요.");
 
@@ -241,8 +247,10 @@ namespace Chapter2Game
                             if (random.Next(1, 10) <= 4)//확률적 실패한 경우
                             {
                                 Console.Clear();
+                                Console.ForegroundColor = ConsoleColor.Red;
                                 Console.WriteLine("던전에 실패했습니다.\n");
-                                Console.WriteLine("[탐험 결과]\n체력이 절반 감소했습니다.");
+                                Console.WriteLine("[탐험 결과]\n체력이 절반 감소했습니다....");
+                                Console.ResetColor();
                                 Console.WriteLine("체력 {0} -> {1}", player.hp, player.hp / 2);
                                 player.hp = (int)((float)player.hp / 2.0f);
 
@@ -252,8 +260,10 @@ namespace Chapter2Game
                             else
                             {
                                 Console.Clear();
+                                Console.BackgroundColor = ConsoleColor.DarkRed;
                                 Console.WriteLine("던전에 실패했습니다.\n");
                                 Console.WriteLine("[탐험 결과]\n목숨만 챙겨서 도망쳤습니다..");
+                                Console.ResetColor();
                                 Console.WriteLine("\n엔터를 눌러 계속...");
                                 Console.ReadLine();
                             }
@@ -262,9 +272,12 @@ namespace Chapter2Game
                         {
                             player.clearCount++;
                             Console.Clear();
+                            Console.ForegroundColor = ConsoleColor.Black;
+                            Console.BackgroundColor = ConsoleColor.DarkGreen;
                             Console.WriteLine("던전 클리어.");
                             Console.WriteLine("축하합니다!!");
                             Console.WriteLine("{0}단계 던전을 클리어 하였습니다\n", DungeonList[stage - 1].dlevel);
+                            Console.ResetColor();
                             Console.WriteLine("[탐험 결과]");
 
                             justhp = player.hp;
@@ -318,7 +331,9 @@ namespace Chapter2Game
             {
                 int storeCount = 0;
                 Console.Clear();
-                Console.WriteLine("상점");
+                Console.BackgroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine("[상점]");
+                Console.ResetColor();
                 Console.WriteLine("필요한 아이템을 얻을 수 있는 상점입니다.\n");
                 Console.WriteLine("[보유 골드]");
                 Console.WriteLine("{0} G\n", player.gold);
@@ -463,7 +478,10 @@ namespace Chapter2Game
             int defPlus = defPlus_;
 
             Console.Clear();
-            Console.WriteLine("상태 보기\n캐릭터의 정보가 표시됩니다\n");
+            Console.BackgroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("[상태 보기]");
+            Console.ResetColor();
+            Console.WriteLine("캐릭터의 정보가 표시됩니다\n");
             Console.WriteLine("Lv : {0}", player.level);
             Console.WriteLine("Chad : {0}", player.chad);
             Console.WriteLine("공격력 : {0} (+{1})", player.attacklevel, atkPlus);
@@ -485,7 +503,10 @@ namespace Chapter2Game
             int count = 0;
 
             Console.Clear();
-            Console.WriteLine("인벤토리\n보유 중인 아이템을 관리할 수 있습니다.\n");
+            Console.BackgroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("[인벤토리]");
+            Console.ResetColor();
+            Console.WriteLine("보유 중인 아이템을 관리할 수 있습니다.\n");
             Console.WriteLine("[아이템 목록]\n");
 
             count = ShowItemList(invenList, count);
@@ -577,13 +598,16 @@ namespace Chapter2Game
         {
             string answer = "a";
             Console.Clear();
+            Console.BackgroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("[Title Screen]");
+            Console.ResetColor();
             Console.WriteLine("스파르타 마을에 오신 여러분 환영합니다.");
             Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다");
             Console.WriteLine("\n1. 상태 보기");
             Console.WriteLine("2. 인벤토리");
             Console.WriteLine("3. 상점");
             Console.WriteLine("4. 던전 입장!");
-            Console.WriteLine("5. 쉬러가기");
+            Console.WriteLine("5. 쉬러가기\n");
             Console.WriteLine("6. 저장하기");
             Console.WriteLine("7. 불러오기");
 
