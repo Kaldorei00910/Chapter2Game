@@ -1,5 +1,6 @@
 ﻿using System.Runtime.ExceptionServices;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 
 namespace Chapter2Game
 {
@@ -15,6 +16,8 @@ namespace Chapter2Game
 
             int atkPlus = 0;
             int defPlus = 0;
+            string fileName = Directory.GetCurrentDirectory() + "\\SaveData.txt";
+            string strData;
 
             Item mu_shuePlate = new Item("무쇠갑옷      ", "방어력", 5, "", "무쇠로 만들어져 튼튼한 갑옷입니다           ", 1000);
             Item spartaSpear = new Item("스파르타의 창", "공격력", 12, "", "스파르타의 전사들이 사용했다는 전설의 창입니다.", 1200);
@@ -87,6 +90,58 @@ namespace Chapter2Game
                     GoRest(player);
 
                 }
+                else if( answer == "6")//저장하기
+                {
+                    File.Create("SaveData.dat");
+                    FileStream saveData = new FileStream(fileName, FileMode.Create);
+                    StreamWriter saveWriter = new StreamWriter(saveData,Encoding.UTF8);
+                    strData = $"player.level={player.level}\nplayer.attacklevel={player.attacklevel}";
+                    saveWriter.Write(strData);
+
+                    saveWriter.Close();
+                    saveData.Close();
+
+                }
+                else if( answer == "7")//불러오기
+                {
+                    FileStream saveData = new FileStream(fileName, FileMode.Open);
+                    StreamReader saveReader = new StreamReader(saveData, Encoding.UTF8);
+                    StringBuilder strBulider = new StringBuilder(1000);
+
+
+                    while (saveReader.Peek() > -1)
+                    {
+                        string strLine = saveReader.ReadLine();
+                        strBulider.AppendLine(strLine);
+                    }
+                    saveReader.Close();
+                    saveData.Close();
+
+                    string strTemp = strBulider.ToString();
+                    string[] data = strTemp.Split('\n');
+
+                    for (int i = 0; i < data.Length; i++)
+                    {
+                        if (data[i].Length > 0)
+                        {
+                            string TempData = data[i];
+                            string[] result = TempData.Split("=");
+
+                            if (result[0] == "player.level")
+                            {
+                                player.level = int.Parse(result[1]);
+                            }
+                            if (result[0] == "player.attacklevel")
+                            {
+                                player.attacklevel = float.Parse(result[1]);
+                            }
+
+
+                        }
+                    }
+
+
+                }
                 else if (answer == "showmethemoney")//치트기능..돈증가
                 {
                     player.gold += 1000000;
@@ -140,7 +195,6 @@ namespace Chapter2Game
             string answerDungeon = "";
             int justhp = 0;
             int justgold = 0;
-            int clearCount = 0;
             Random random = new Random();
             do
             {
@@ -184,7 +238,7 @@ namespace Chapter2Game
                         }
                         else
                         {
-                            clearCount++;
+                            player.clearCount++;
                             Console.Clear();
                             Console.WriteLine("던전 클리어.");
                             Console.WriteLine("축하합니다!!");
@@ -199,9 +253,9 @@ namespace Chapter2Game
                             player.gold += (int)((float)DungeonList[stage - 1].reward * (1.0f + random.Next((int)(player.attacklevel + (float)atkPlus), (int)((player.attacklevel + (float)atkPlus) * 2.0f))));
                             Console.WriteLine("Gold {0} -> {1}", justgold, player.gold);
 
-                            if(clearCount == player.level)
+                            if(player.clearCount == player.level)
                             {
-                                clearCount = 0;
+                                player.clearCount = 0;
                                 Console.WriteLine("\nLEVEL UP!");
                                 Console.WriteLine("플레이어 레벨 : {0} -> {1}     ",player.level,player.level+1);
                                 player.level += 1;
@@ -508,6 +562,8 @@ namespace Chapter2Game
             Console.WriteLine("3. 상점");
             Console.WriteLine("4. 던전 입장!");
             Console.WriteLine("5. 쉬러가기");
+            Console.WriteLine("6. 저장하기");
+
 
             Console.WriteLine("\n원하시는 행동을 입력해주세요.");
             answer = Console.ReadLine();
@@ -523,6 +579,7 @@ namespace Chapter2Game
             public int defencelevel = 5;
             public int hp = 100;
             public int gold = 1500;
+            public int clearCount = 0;
         }
 
         class Item//아이템에 대한 정보
