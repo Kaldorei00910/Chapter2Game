@@ -246,6 +246,13 @@ namespace Chapter2Game
                         {
                             if (random.Next(1, 10) <= 4)//확률적 실패한 경우
                             {
+                                if (player.hp == 1)//체력이 10이하로 던전 들어가 실패 경우 : 사망
+                                {
+                                    Console.Clear();
+                                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                                    Console.WriteLine("\n    -    더 많은 방어도를 쌓고 와야했었는데...    -\n\n");
+                                    GameOver();
+                                }
                                 Console.Clear();
                                 Console.ForegroundColor = ConsoleColor.Red;
                                 Console.WriteLine("던전에 실패했습니다.\n");
@@ -270,6 +277,13 @@ namespace Chapter2Game
                         }
                         else
                         {
+                            if (player.hp == 1)//체력이 1인채로 던전 들어간 경우 : 사망
+                            {
+                                Console.Clear();
+                                Console.ForegroundColor = ConsoleColor.DarkRed;
+                                Console.WriteLine("\n    -    체력 좀 채우고 올껄..    -\n\n");
+                                GameOver();
+                            }
                             player.clearCount++;
                             Console.Clear();
                             Console.ForegroundColor = ConsoleColor.Black;
@@ -282,6 +296,10 @@ namespace Chapter2Game
 
                             justhp = player.hp;
                             player.hp -= random.Next(20 + (DungeonList[stage - 1].needDef - player.defencelevel - defPlus), 35 + (DungeonList[stage - 1].needDef - player.defencelevel - defPlus));
+                            if(player.hp < 1)
+                            { 
+                                player.hp = 1; 
+                            }
                             Console.WriteLine("체력 {0} -> {1}", justhp, player.hp);
 
                             justgold = player.gold;
@@ -299,15 +317,13 @@ namespace Chapter2Game
                                 player.attacklevel += 0.5f;
                                 player.defencelevel += 1;
                             }
-
-
-
                             Console.WriteLine("\n엔터를 눌러 계속...");
                             Console.ReadLine();
                         }
-
-
-
+                        if (player.hp <= 0)
+                        {
+                            GameOver();
+                        }
                     }
                     else
                     {
@@ -321,6 +337,17 @@ namespace Chapter2Game
 
             }
             while (answerDungeon != "0");
+        }
+
+        private static void GameOver()
+        {
+            
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("\r\n                                          \r\n                                      ,,  \r\n`7MM\"\"\"Yb.                          `7MM  \r\n  MM    `Yb.                          MM  \r\n  MM     `Mb  .gP\"Ya   ,6\"Yb.    ,M\"\"bMM  \r\n  MM      MM ,M'   Yb 8)   MM  ,AP    MM  \r\n  MM     ,MP 8M\"\"\"\"\"\"  ,pm9MM  8MI    MM  \r\n  MM    ,dP' YM.    , 8M   MM  `Mb    MM  \r\n.JMMmmmdP'    `Mbmmd' `Moo9^Yo. `Wbmd\"MML.\r\n                                          \r\n                                          \r\n");
+            Console.WriteLine("\n\n\n\n  - 당신은 죽었습니다. ");
+            Console.WriteLine("게임이 종료됩니다..");
+            Console.ReadLine();
+            Environment.Exit(0);
         }
 
         private static void ShowStore(Player player, List<Item> invenList, List<Item> allitemList)
