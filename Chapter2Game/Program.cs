@@ -79,85 +79,43 @@ namespace Chapter2Game
                 }
                 else if (answer == "4")
                 {
-                    string answerDungeon = "";
-                    int justhp = 0;
-                    int justgold = 0;
-                    Random random = new Random();
-                    do
+                    DungeonEnter(player, DungeonList, atkPlus, defPlus);//던전 진입
+
+                }
+                else if ( answer == "5")//휴식하기
+                {
+                    string answerRest = "";
+                    Console.Clear();
+                    Console.WriteLine("휴식하기");
+                    Console.WriteLine("500 G 를 내면 체력을 회복할 수 있습니다. (보유 골드 : {0} G)            ",player.gold);
+                    Console.WriteLine("\n1. 휴식하기");
+                    Console.WriteLine("0. 나가기");
+                    Console.WriteLine("\n원하시는 행동을 입력해주세요.");
+
+                    answerRest = Console.ReadLine();
+                    if(answerRest == "1")
                     {
-                        Console.Clear();
-                        Console.WriteLine("던전입장");
-                        Console.WriteLine("난이도에 맞는 던전을 선택해 주세요!");
-                        Console.WriteLine("\n1. 수퍼 겁쟁이들의 쉽터 \t | 방어력 5 이상 권장");
-                        Console.WriteLine("2. 보통 겁쟁이들의 쉼터 \t | 방어력 11 이상 권장");
-                        Console.WriteLine("3. !!! 사나이 클럽 !!!   \t | 방어력 17 이상 권장\n");
-                        Console.WriteLine("0. 겁에 질려 도망가기");
-                        Console.WriteLine("\n원하시는 행동을 입력해주세요.");
-
-                        answerDungeon = Console.ReadLine();
-
-                        if (int.TryParse(answerDungeon, out int stage))//숫자 입력받음
+                        if (player.gold > 500)
                         {
-                            if(stage >= 1 && stage < 4)//던전 입장, 0입력시 마을로감
-                            {
-                                
-                                if (DungeonList[stage-1].needDef > player.defencelevel + defPlus)//던전의 방어도가 더 높을경우(40퍼확률 실패)
-                                {
-                                    if (random.Next(1, 10) <=4)//확률적 실패한 경우
-                                    {
-                                        Console.Clear();
-                                        Console.WriteLine("던전에 실패했습니다.\n");
-                                        Console.WriteLine("[탐험 결과]\n체력이 절반 감소했습니다.");
-                                        Console.WriteLine("체력 {0} -> {1}",player.hp,player.hp/2);
-                                        player.hp = (int)((float)player.hp / 2.0f);
+                            Console.Clear();
+                            Console.WriteLine("체력을 회복했습니다!");
+                            Console.WriteLine("플레이어 체력 : {0} -> {1}       ", player.hp, 100);
+                            Console.WriteLine("보유 Gold : {0} -> {1}       ", player.gold, player.gold - 500);
+                            player.hp = 100;
+                            player.gold -= 500;
+                            Console.WriteLine("\n엔터를 눌러 계속...");
+                            Console.ReadLine();
 
-                                        Console.WriteLine("\n엔터를 눌러 계속...");
-                                        Console.ReadLine();
-                                    }
-                                    else
-                                    {
-                                        Console.Clear();
-                                        Console.WriteLine("던전에 실패했습니다.\n");
-                                        Console.WriteLine("[탐험 결과]\n목숨만 챙겨서 도망쳤습니다..");
-                                        Console.WriteLine("\n엔터를 눌러 계속...");
-                                        Console.ReadLine();
-                                    }
-                                }
-                                else
-                                {
-                                    Console.Clear();
-                                    Console.WriteLine("던전 클리어.");
-                                    Console.WriteLine("축하합니다!!");
-                                    Console.WriteLine("{0}단계 던전을 클리어 하였습니다\n", DungeonList[stage - 1].dlevel);
-                                    Console.WriteLine("[탐험 결과]");
-
-                                    justhp = player.hp;
-                                    player.hp -= random.Next(20 + (DungeonList[stage - 1].needDef - player.defencelevel - defPlus), 35 + (DungeonList[stage - 1].needDef - player.defencelevel - defPlus));
-                                    Console.WriteLine("체력 {0} -> {1}", justhp, player.hp);
-
-                                    justgold = player.gold;
-                                    player.gold += (int)((float)DungeonList[stage - 1].reward * (1.0f + (float)random.Next(player.attacklevel + atkPlus, (player.attacklevel + atkPlus) * 2)));
-                                    Console.WriteLine("Gold {0} -> {1}", justgold, player.gold);
-
-                                    Console.WriteLine("\n엔터를 눌러 계속...");
-                                    Console.ReadLine();
-                                }
-
-
-
-                            }
-                            else
-                            {
-                                Console.WriteLine("올바른 번호를 입력하세요");
-                            }
                         }
                         else
                         {
-                            Console.WriteLine("올바른 숫자를 입력하세요");
+                            Console.Clear();
+                            Console.WriteLine("보유 Gold가 부족합니다!");
+                            Console.WriteLine("\n엔터를 눌러 계속...");
+                            Console.ReadLine();
                         }
-
                     }
-                    while (answerDungeon != "0");
+
 
                 }
                 else if (answer == "showmethemoney")//치트기능..돈증가
@@ -172,6 +130,89 @@ namespace Chapter2Game
             }
 
         }//메인 종료(게임종료)
+
+        private static void DungeonEnter(Player player, List<Dungeon> DungeonList, int atkPlus, int defPlus)
+        {
+            string answerDungeon = "";
+            int justhp = 0;
+            int justgold = 0;
+            Random random = new Random();
+            do
+            {
+                Console.Clear();
+                Console.WriteLine("던전입장");
+                Console.WriteLine("난이도에 맞는 던전을 선택해 주세요!");
+                Console.WriteLine("\n1. 수퍼 겁쟁이들의 쉽터 \t | 방어력 5 이상 권장");
+                Console.WriteLine("2. 보통 겁쟁이들의 쉼터 \t | 방어력 11 이상 권장");
+                Console.WriteLine("3. !!! 사나이 클럽 !!!   \t | 방어력 17 이상 권장\n");
+                Console.WriteLine("0. 겁에 질려 도망가기");
+                Console.WriteLine("\n원하시는 행동을 입력해주세요.");
+
+                answerDungeon = Console.ReadLine();
+
+                if (int.TryParse(answerDungeon, out int stage))//숫자 입력받음
+                {
+                    if (stage >= 1 && stage < 4)//던전 입장, 0입력시 마을로감
+                    {
+
+                        if (DungeonList[stage - 1].needDef > player.defencelevel + defPlus)//던전의 방어도가 더 높을경우(40퍼확률 실패)
+                        {
+                            if (random.Next(1, 10) <= 4)//확률적 실패한 경우
+                            {
+                                Console.Clear();
+                                Console.WriteLine("던전에 실패했습니다.\n");
+                                Console.WriteLine("[탐험 결과]\n체력이 절반 감소했습니다.");
+                                Console.WriteLine("체력 {0} -> {1}", player.hp, player.hp / 2);
+                                player.hp = (int)((float)player.hp / 2.0f);
+
+                                Console.WriteLine("\n엔터를 눌러 계속...");
+                                Console.ReadLine();
+                            }
+                            else
+                            {
+                                Console.Clear();
+                                Console.WriteLine("던전에 실패했습니다.\n");
+                                Console.WriteLine("[탐험 결과]\n목숨만 챙겨서 도망쳤습니다..");
+                                Console.WriteLine("\n엔터를 눌러 계속...");
+                                Console.ReadLine();
+                            }
+                        }
+                        else
+                        {
+                            Console.Clear();
+                            Console.WriteLine("던전 클리어.");
+                            Console.WriteLine("축하합니다!!");
+                            Console.WriteLine("{0}단계 던전을 클리어 하였습니다\n", DungeonList[stage - 1].dlevel);
+                            Console.WriteLine("[탐험 결과]");
+
+                            justhp = player.hp;
+                            player.hp -= random.Next(20 + (DungeonList[stage - 1].needDef - player.defencelevel - defPlus), 35 + (DungeonList[stage - 1].needDef - player.defencelevel - defPlus));
+                            Console.WriteLine("체력 {0} -> {1}", justhp, player.hp);
+
+                            justgold = player.gold;
+                            player.gold += (int)((float)DungeonList[stage - 1].reward * (1.0f + (float)random.Next(player.attacklevel + atkPlus, (player.attacklevel + atkPlus) * 2)));
+                            Console.WriteLine("Gold {0} -> {1}", justgold, player.gold);
+
+                            Console.WriteLine("\n엔터를 눌러 계속...");
+                            Console.ReadLine();
+                        }
+
+
+
+                    }
+                    else
+                    {
+                        Console.WriteLine("올바른 번호를 입력하세요");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("올바른 숫자를 입력하세요");
+                }
+
+            }
+            while (answerDungeon != "0");
+        }
 
         private static void ShowStore(Player player, List<Item> invenList, List<Item> allitemList)
         {
@@ -446,6 +487,8 @@ namespace Chapter2Game
             Console.WriteLine("2. 인벤토리");
             Console.WriteLine("3. 상점");
             Console.WriteLine("4. 던전 입장!");
+            Console.WriteLine("5. 쉬러가기");
+
             Console.WriteLine("\n원하시는 행동을 입력해주세요.");
             answer = Console.ReadLine();
             return answer;
