@@ -1,4 +1,6 @@
-﻿using System.Runtime.ExceptionServices;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
@@ -92,54 +94,12 @@ namespace Chapter2Game
                 }
                 else if( answer == "6")//저장하기
                 {
-                    File.Create("SaveData.dat");
-                    FileStream saveData = new FileStream(fileName, FileMode.Create);
-                    StreamWriter saveWriter = new StreamWriter(saveData,Encoding.UTF8);
-                    strData = $"player.level={player.level}\nplayer.attacklevel={player.attacklevel}";
-                    saveWriter.Write(strData);
-
-                    saveWriter.Close();
-                    saveData.Close();
+                    strData = Save(player, invenList, fileName);
 
                 }
                 else if( answer == "7")//불러오기
                 {
-                    FileStream saveData = new FileStream(fileName, FileMode.Open);
-                    StreamReader saveReader = new StreamReader(saveData, Encoding.UTF8);
-                    StringBuilder strBulider = new StringBuilder(1000);
-
-
-                    while (saveReader.Peek() > -1)
-                    {
-                        string strLine = saveReader.ReadLine();
-                        strBulider.AppendLine(strLine);
-                    }
-                    saveReader.Close();
-                    saveData.Close();
-
-                    string strTemp = strBulider.ToString();
-                    string[] data = strTemp.Split('\n');
-
-                    for (int i = 0; i < data.Length; i++)
-                    {
-                        if (data[i].Length > 0)
-                        {
-                            string TempData = data[i];
-                            string[] result = TempData.Split("=");
-
-                            if (result[0] == "player.level")
-                            {
-                                player.level = int.Parse(result[1]);
-                            }
-                            if (result[0] == "player.attacklevel")
-                            {
-                                player.attacklevel = float.Parse(result[1]);
-                            }
-
-
-                        }
-                    }
-
+                    invenList = Load(player, invenList, fileName);
 
                 }
                 else if (answer == "showmethemoney")//치트기능..돈증가
@@ -154,6 +114,68 @@ namespace Chapter2Game
             }
 
         }//메인 종료(게임종료)
+
+        private static List<Item> Load(Player player, List<Item> invenList, string fileName)
+        {
+            FileInfo fi = new FileInfo(fileName);
+            if (fi.Exists)
+            {
+                FileStream saveData = new FileStream(fileName, FileMode.Open);
+                StreamReader saveReader = new StreamReader(saveData, Encoding.UTF8);
+                StringBuilder strBulider = new StringBuilder(1000);
+
+
+                while (saveReader.Peek() > -1)
+                {
+                    string strLine = saveReader.ReadLine();
+                    strBulider.AppendLine(strLine);
+                }
+                saveReader.Close();
+                saveData.Close();
+
+                string strTemp = strBulider.ToString();
+                string[] data = strTemp.Split('\n');
+
+                player.SetPlayer(data);// 플레이어의 데이터 불러온 값으로 변경
+
+                using (FileStream fs = new FileStream("Itemlist.dat", FileMode.Open))//인벤토리 불러오기
+                {
+                    BinaryFormatter bf = new BinaryFormatter();
+                    invenList = (List<Item>)bf.Deserialize(fs);
+                }
+                Console.WriteLine("불러오기 완료!(엔터를 눌러 확인..)");
+                Console.ReadLine();
+            }
+            else
+            {
+                Console.WriteLine("저장된 파일이 없습니다!(엔터를 눌러 확인..)");
+                Console.ReadLine();
+
+            }
+
+            return invenList;
+        }
+
+        private static string Save(Player player, List<Item> invenList, string fileName)
+        {
+            string strData;
+            //File.Create("SaveData.dat");
+            FileStream saveData = new FileStream(fileName, FileMode.Create);
+            StreamWriter saveWriter = new StreamWriter(saveData, Encoding.UTF8);
+            strData = $"{player.level}\n{player.attacklevel}\n{player.defencelevel}\n{player.hp}\n{player.gold}\n{player.clearCount}";
+            saveWriter.Write(strData);
+
+            saveWriter.Close();
+            saveData.Close();
+
+            using (FileStream fs = new FileStream("Itemlist.dat", FileMode.Create))//인벤토리 저장
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                bf.Serialize(fs, invenList);
+            }
+
+            return strData;
+        }
 
         private static void GoRest(Player player)
         {
@@ -450,7 +472,7 @@ namespace Chapter2Game
             Console.WriteLine("Gold : {0}\n", player.gold);
             Console.WriteLine("0. 나가기\n");
             Console.WriteLine("원하시는 행동을 입력해주세요");
-            while (char.Parse(Console.ReadLine()) != '0')
+            while (Console.ReadLine() != "0")
             {
                 Console.WriteLine("올바른 값을 입력하세요");
             }
@@ -563,6 +585,7 @@ namespace Chapter2Game
             Console.WriteLine("4. 던전 입장!");
             Console.WriteLine("5. 쉬러가기");
             Console.WriteLine("6. 저장하기");
+            Console.WriteLine("7. 불러오기");
 
 
             Console.WriteLine("\n원하시는 행동을 입력해주세요.");
@@ -580,8 +603,19 @@ namespace Chapter2Game
             public int hp = 100;
             public int gold = 1500;
             public int clearCount = 0;
-        }
 
+            public void SetPlayer(string[] loadData)
+            {
+                level = int.Parse(loadData[(int)PlayerData.level]);
+                attacklevel = float.Parse(loadData[(int)PlayerData.attacklevel]);
+                defencelevel = int.Parse(loadData[(int)PlayerData.defencelevel]);
+                hp = int.Parse(loadData[(int)PlayerData.hp]);
+                gold = int.Parse(loadData[(int)PlayerData.gold]);
+                clearCount = int.Parse(loadData[(int)PlayerData.clearCount]);
+
+            }
+        }
+        [Serializable]
         class Item//아이템에 대한 정보
         {
             public string name;
@@ -618,6 +652,16 @@ namespace Chapter2Game
                 needDef = needDef_;
 
             }
+        }
+
+        enum PlayerData
+        {
+            level,
+            attacklevel,
+            defencelevel,
+            hp,
+            gold,
+            clearCount
         }
 
     }
